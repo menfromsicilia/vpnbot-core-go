@@ -14,7 +14,7 @@ COPY . .
 
 # Download dependencies and build
 RUN go mod tidy && go mod download && go mod verify
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o vpnbot-core cmd/server/main.go
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o vpnbot-core ./cmd/server/main.go
 
 # Runtime stage
 FROM alpine:latest
