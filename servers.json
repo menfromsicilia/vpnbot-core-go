@@ -1,0 +1,52 @@
+{
+  "servers": [
+    {
+      "countryCode": "DE",
+      "cityName": "Frankfurt",
+      "extName": "FRA-1",
+      "endpoint": "84.201.14.167",
+      "inboundType": "trojan",
+      "active": true
+    },
+    {
+      "countryCode": "NL",
+      "cityName": "Amsterdam",
+      "extName": "AMS-1",
+      "endpoint": "87.120.244.189",
+      "inboundType": "trojan",
+      "active": true
+    },
+    {
+      "countryCode": "SE",
+      "cityName": "Stockholm",
+      "extName": "STO-1",
+      "endpoint": "78.40.117.4",
+      "inboundType": "trojan",
+      "active": true
+    },
+    {
+      "countryCode": "US",
+      "cityName": "Chicago",
+      "extName": "CHI-1",
+      "endpoint": "31.57.243.95",
+      "inboundType": "trojan",
+      "active": true
+    },
+    {
+      "countryCode": "CH",
+      "cityName": "Zurich",
+      "extName": "ZRH-Sprintbox",
+      "endpoint": "185.72.144.62",
+      "inboundType": "trojan",
+      "active": true
+    },
+    {
+      "countryCode": "FI",
+      "cityName": "Helsinki",
+      "extName": "HEL-1",
+      "endpoint": "158.160.87.175",
+      "inboundType": "trojan",
+      "active": true
+    }
+  ]
+}

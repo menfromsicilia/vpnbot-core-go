@@ -1,0 +1,58 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Deploy to DigitalOcean
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DO_HOST }}
+        username: ${{ secrets.DO_USERNAME }}
+        key: ${{ secrets.DO_SSH_KEY }}
+        script: |
+          cd /opt/vpnbot-core-go
+          
+          # Pull latest code
+          git pull origin main
+          
+          # Create .env from secrets if not exists
+          if [ ! -f .env ]; then
+            cat > .env << EOF
+          PORT=${{ secrets.PORT }}
+          API_KEY_REQUESTS=${{ secrets.API_KEY_REQUESTS }}
+          XRAY_NODE_TOKEN=${{ secrets.XRAY_NODE_TOKEN }}
+          DB_PATH=/app/data/vpnbot.db
+          REQUEST_TIMEOUT=${{ secrets.REQUEST_TIMEOUT }}
+          NODE_TIMEOUT=${{ secrets.NODE_TIMEOUT }}
+          LOG_LEVEL=${{ secrets.LOG_LEVEL }}
+          LOG_OUTPUT=file
+          LOG_FILE=/app/logs/vpnbot.log
+          LOG_MAX_SIZE=${{ secrets.LOG_MAX_SIZE }}
+          LOG_MAX_BACKUPS=${{ secrets.LOG_MAX_BACKUPS }}
+          LOG_MAX_AGE=${{ secrets.LOG_MAX_AGE }}
+          LOG_COMPRESS=true
+          EOF
+          fi
+          
+          # Rebuild and restart
+          docker compose down
+          docker compose up -d --build
+          
+          # Wait for service to be ready
+          sleep 5
+          
+          # Health check
+          curl -f http://localhost:8080/api/health || exit 1
+          
+          echo "✅ Deployment successful!"
+

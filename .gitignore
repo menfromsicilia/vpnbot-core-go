@@ -1,0 +1,40 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+vpnbot-core-go
+server
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Data and logs directories
+data/
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+

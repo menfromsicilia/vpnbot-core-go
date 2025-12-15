@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  vpnbot-core:
+    build: .
+    container_name: vpnbot-core-go
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - API_KEY_REQUESTS=${API_KEY_REQUESTS:-vpnbot_rPHKly0DoS0pJbEWXCibiPXBkZ0sgVsQsvMav35zwkKSQOuUYBV7TiGghQVkgyao}
+      - XRAY_NODE_TOKEN=${XRAY_NODE_TOKEN:-BSgFahXxzrL5yZcNo5wa4696QXAEfR2Ljf1MQKyq8V2KW6Fr4W6Xws98NvrQYeDp}
+      - DB_PATH=/app/data/vpnbot.db
+      - REQUEST_TIMEOUT=10s
+      - NODE_TIMEOUT=3s
+      - LOG_LEVEL=info
+      - LOG_OUTPUT=stdout # Docker handles log rotation
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./data:/app/data
