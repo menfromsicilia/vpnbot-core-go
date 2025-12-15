@@ -298,7 +298,7 @@ func (h *Handlers) GetNodesWithUsers(c *fiber.Ctx) error {
 }
 
 // GetPendingDeletionsHandler handles GET /api/cleanup/pending
-func (h *Handler) GetPendingDeletionsHandler(c *fiber.Ctx) error {
+func (h *Handlers) GetPendingDeletionsHandler(c *fiber.Ctx) error {
 	pendingDeletions, err := h.service.GetPendingDeletions()
 	if err != nil {
 		h.logger.Error("failed to get pending deletions", slog.String("error", err.Error()))
@@ -314,7 +314,7 @@ func (h *Handler) GetPendingDeletionsHandler(c *fiber.Ctx) error {
 }
 
 // CleanupPendingDeletionsHandler handles POST /api/cleanup
-func (h *Handler) CleanupPendingDeletionsHandler(c *fiber.Ctx) error {
+func (h *Handlers) CleanupPendingDeletionsHandler(c *fiber.Ctx) error {
 	result, err := h.service.CleanupPendingDeletions(c.Context())
 	if err != nil {
 		h.logger.Error("cleanup failed", slog.String("error", err.Error()))
@@ -327,7 +327,7 @@ func (h *Handler) CleanupPendingDeletionsHandler(c *fiber.Ctx) error {
 }
 
 // DeletePendingDeletionHandler handles DELETE /api/cleanup/pending
-func (h *Handler) DeletePendingDeletionHandler(c *fiber.Ctx) error {
+func (h *Handlers) DeletePendingDeletionHandler(c *fiber.Ctx) error {
 	var req models.DeletePendingRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
