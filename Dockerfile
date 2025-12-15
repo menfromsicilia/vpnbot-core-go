@@ -6,15 +6,12 @@ WORKDIR /app
 # Install dependencies
 RUN apk add --no-cache git gcc musl-dev sqlite-dev
 
-# Copy go mod files
-COPY go.mod ./
-
-# Copy source code
+# Copy everything
 COPY . .
 
 # Download dependencies and build
-RUN go mod tidy && go mod download && go mod verify
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o vpnbot-core ./cmd/server/main.go
+RUN go mod download
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o vpnbot-core ./cmd/server/main.go
 
 # Runtime stage
 FROM alpine:latest
