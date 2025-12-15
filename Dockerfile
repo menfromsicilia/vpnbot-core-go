@@ -1,6 +1,9 @@
 # Build stage
 FROM golang:1.22-alpine AS builder
 
+# Use direct download instead of proxy to avoid 403 errors
+ENV GOPROXY=direct
+
 WORKDIR /app
 
 # Install dependencies
