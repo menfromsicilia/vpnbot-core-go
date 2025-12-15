@@ -208,6 +208,11 @@ func (r *Repository) DeleteUserNodes(userID string) error {
 	return err
 }
 
+func (r *Repository) DeleteUserNode(userID, endpoint string) error {
+	_, err := r.db.Exec("DELETE FROM user_nodes WHERE user_id = ? AND endpoint = ?", userID, endpoint)
+	return err
+}
+
 func (r *Repository) GetTotalUsersCount() (int, error) {
 	var count int
 	err := r.db.QueryRow("SELECT COUNT(DISTINCT user_id) FROM user_nodes").Scan(&count)
