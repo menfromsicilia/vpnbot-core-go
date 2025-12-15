@@ -13,6 +13,7 @@ RUN apk add --no-cache git gcc musl-dev sqlite-dev
 COPY . .
 
 # Download dependencies and build
+RUN go mod tidy
 RUN go mod download
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o vpnbot-core ./cmd/server/main.go
 
