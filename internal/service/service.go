@@ -71,8 +71,9 @@ func (s *Service) CreateUser(ctx context.Context, existingUUID, targetEndpoint s
 		return nil, fmt.Errorf("no active servers available")
 	}
 
-	// First, delete user from all nodes (cleanup)
-	s.deleteUserFromAllNodes(ctx, userID, servers)
+	// Skip cleanup - it can cause timeouts if nodes are slow
+	// TODO: make cleanup async or add proper timeout
+	// s.deleteUserFromAllNodes(ctx, userID, servers)
 
 	// Create context with timeout
 	ctx, cancel := context.WithTimeout(ctx, s.reqTimeout)
