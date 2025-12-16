@@ -76,6 +76,18 @@ func (r *Repository) GetServers(activeOnly bool) ([]models.Server, error) {
 	return servers, rows.Err()
 }
 
+func (r *Repository) GetServerByEndpoint(endpoint string) (*models.Server, error) {
+	query := "SELECT country_code, city_name, ext_name, endpoint, inbound_type, active, created_at FROM servers WHERE endpoint = ?"
+	
+	var s models.Server
+	err := r.db.QueryRow(query, endpoint).Scan(&s.CountryCode, &s.CityName, &s.ExtName, &s.Endpoint, &s.InboundType, &s.Active, &s.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	
+	return &s, nil
+}
+
 func (r *Repository) CreateServers(servers []models.Server) error {
 	tx, err := r.db.Begin()
 	if err != nil {

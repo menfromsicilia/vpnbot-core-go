@@ -31,9 +31,13 @@ func (h *Handlers) Health(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
 
-// CreateUser creates a user on all active nodes
+// CreateUser creates a user on all active nodes or specific node
 func (h *Handlers) CreateUser(c *fiber.Ctx) error {
-	result, err := h.service.CreateUser(c.Context())
+	var req models.CreateUserRequest
+	// Body is optional - if empty, creates on all nodes
+	_ = c.BodyParser(&req)
+	
+	result, err := h.service.CreateUser(c.Context(), req.UUID, req.Endpoint)
 	if err != nil {
 		h.logger.Error("create user failed", slog.String("error", err.Error()))
 		return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{

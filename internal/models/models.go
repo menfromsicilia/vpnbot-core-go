@@ -22,6 +22,12 @@ type UserNode struct {
 }
 
 // CreateUserResponse is the response for /api/create
+// CreateUserRequest is the request for creating a user
+type CreateUserRequest struct {
+	UUID     string `json:"uuid,omitempty"`     // Optional: for adding config to existing user
+	Endpoint string `json:"endpoint,omitempty"` // Optional: for creating on specific node
+}
+
 type CreateUserResponse struct {
 	UUID    string         `json:"uuid"`
 	Configs []ConfigItem   `json:"configs"`
@@ -30,6 +36,7 @@ type CreateUserResponse struct {
 // ConfigItem represents a single config for a country
 type ConfigItem struct {
 	CountryCode string `json:"countryCode"`
+	IP          string `json:"ip"`
 	Config      string `json:"config"`
 }
 

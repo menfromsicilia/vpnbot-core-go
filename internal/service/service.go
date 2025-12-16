@@ -36,14 +36,35 @@ type nodeResult struct {
 }
 
 // CreateUser creates a user on all active nodes in parallel
-func (s *Service) CreateUser(ctx context.Context) (*models.CreateUserResponse, error) {
-	// Generate UUID
-	userID := uuid.New().String()
+func (s *Service) CreateUser(ctx context.Context, existingUUID, targetEndpoint string) (*models.CreateUserResponse, error) {
+	// Determine user ID
+	var userID string
+	if existingUUID != "" {
+		userID = existingUUID
+	} else {
+		userID = uuid.New().String()
+	}
 
-	// Get all active servers
-	servers, err := s.repo.GetServers(true)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get servers: %w", err)
+	// Get servers to create on
+	var servers []models.Server
+	var err error
+	
+	if targetEndpoint != "" {
+		// Create on specific node only
+		server, err := s.repo.GetServerByEndpoint(targetEndpoint)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get server: %w", err)
+		}
+		if !server.Active {
+			return nil, fmt.Errorf("server is not active")
+		}
+		servers = []models.Server{*server}
+	} else {
+		// Create on all active nodes
+		servers, err = s.repo.GetServers(true)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get servers: %w", err)
+		}
 	}
 
 	if len(servers) == 0 {
@@ -78,6 +99,7 @@ func (s *Service) CreateUser(ctx context.Context) (*models.CreateUserResponse, e
 		successCount++
 		configs = append(configs, models.ConfigItem{
 			CountryCode: result.server.CountryCode,
+			IP:          result.server.Endpoint,
 			Config:      result.config,
 		})
 
