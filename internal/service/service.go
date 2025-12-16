@@ -37,6 +37,10 @@ type nodeResult struct {
 
 // CreateUser creates a user on all active nodes in parallel
 func (s *Service) CreateUser(ctx context.Context, existingUUID, targetEndpoint string) (*models.CreateUserResponse, error) {
+	s.logger.Info("CreateUser started", 
+		slog.String("existingUUID", existingUUID), 
+		slog.String("targetEndpoint", targetEndpoint))
+	
 	// Determine user ID
 	var userID string
 	if existingUUID != "" {
@@ -44,6 +48,8 @@ func (s *Service) CreateUser(ctx context.Context, existingUUID, targetEndpoint s
 	} else {
 		userID = uuid.New().String()
 	}
+	
+	s.logger.Info("User ID determined", slog.String("userID", userID))
 
 	// Get servers to create on
 	var servers []models.Server
@@ -51,7 +57,8 @@ func (s *Service) CreateUser(ctx context.Context, existingUUID, targetEndpoint s
 	
 	if targetEndpoint != "" {
 		// Create on specific node only
-		server, err := s.repo.GetServerByEndpoint(targetEndpoint)
+		var server *models.Server
+		server, err = s.repo.GetServerByEndpoint(targetEndpoint)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get server: %w", err)
 		}
@@ -71,6 +78,8 @@ func (s *Service) CreateUser(ctx context.Context, existingUUID, targetEndpoint s
 		return nil, fmt.Errorf("no active servers available")
 	}
 
+	s.logger.Info("Servers selected", slog.Int("count", len(servers)))
+
 	// Skip cleanup - it can cause timeouts if nodes are slow
 	// TODO: make cleanup async or add proper timeout
 	// s.deleteUserFromAllNodes(ctx, userID, servers)
@@ -79,8 +88,12 @@ func (s *Service) CreateUser(ctx context.Context, existingUUID, targetEndpoint s
 	ctx, cancel := context.WithTimeout(ctx, s.reqTimeout)
 	defer cancel()
 
+	s.logger.Info("Starting user creation on nodes")
+	
 	// Create user on all nodes in parallel
 	results := s.createUserOnNodes(ctx, userID, servers)
+	
+	s.logger.Info("User creation on nodes completed", slog.Int("results", len(results)))
 
 	// Process results
 	var configs []models.ConfigItem
